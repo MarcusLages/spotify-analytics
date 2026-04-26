@@ -17,6 +17,9 @@ CREATE TABLE Albums (
     CONSTRAINT pk_albums_id PRIMARY KEY(id)
 );
 
+CREATE INDEX idx_albums_name ON Albums(name);
+CREATE INDEX idx_albums_type ON Albums(type);
+
 CREATE TABLE Songs (
     id          VARCHAR(22), -- PK
     name        VARCHAR(255) NOT NULL,
@@ -34,6 +37,7 @@ CREATE TABLE Songs (
 );
 
 CREATE INDEX idx_songs_album_id ON Songs(album_id); -- B-tree vs Hash
+CREATE INDEX idx_songs_name ON Songs(name);
 
 CREATE TABLE ArtistsInSongs (
     song_id      VARCHAR(22),
