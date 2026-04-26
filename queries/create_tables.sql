@@ -1,11 +1,15 @@
 CREATE TABLE Artists (
     id   VARCHAR(22), -- PK
-    name VARCHAR(255) NOT NULL,
-    CONSTRAINT ArtistsPK PRIMARY KEY(id)
+    name VARCHAR(255) UNIQUE NOT NULL,
+    created_at      DATE DEFAULT CURRENT_DATE,
+    last_synced     DATE DEFAULT CURRENT_DATE,
+    CONSTRAINT pk_artists_id PRIMARY KEY(id)
 );
 
 CREATE TYPE ALBUMTYPE as ENUM('album', 'single', 'compilation');
 CREATE TYPE DATEPRECISION as ENUM('year', 'month', 'day');
+
+-- TODO: ADD COMMENTS
 
 CREATE TABLE Albums (
     id                     VARCHAR(22), -- PK
@@ -14,6 +18,8 @@ CREATE TABLE Albums (
     release_date           DATE,
     release_date_precision DATEPRECISION DEFAULT 'year',
     added_at               DATE DEFAULT CURRENT_DATE,
+    created_at             DATE DEFAULT CURRENT_DATE,
+    last_synced            DATE DEFAULT CURRENT_DATE,
     CONSTRAINT pk_albums_id PRIMARY KEY(id)
 );
 
@@ -21,14 +27,16 @@ CREATE INDEX idx_albums_name ON Albums(name);
 CREATE INDEX idx_albums_type ON Albums(type);
 
 CREATE TABLE Songs (
-    id          VARCHAR(22), -- PK
-    name        VARCHAR(255) NOT NULL,
-    album_id    VARCHAR(22) NOT NULL,
-    track_num   SMALLINT DEFAULT 1,
-    duration_ms INTEGER,
-    is_playable BOOLEAN DEFAULT NULL,
-    popularity  SMALLINT,
-    added_at    DATE DEFAULT CURRENT_DATE,
+    id           VARCHAR(22), -- PK
+    name         VARCHAR(255) NOT NULL,
+    album_id     VARCHAR(22) NOT NULL,
+    track_num    SMALLINT DEFAULT 1,
+    duration_ms  INTEGER,
+    is_playable  BOOLEAN DEFAULT NULL,
+    popularity   SMALLINT,
+    added_at     DATE DEFAULT CURRENT_DATE,
+    created_at   DATE DEFAULT CURRENT_DATE,
+    last_synced  DATE DEFAULT CURRENT_DATE,
     CONSTRAINT pk_songs_id          PRIMARY KEY(id),
     CONSTRAINT fk_songs_album_id    FOREIGN KEY(album_id) REFERENCES Albums(id),
     CONSTRAINT ck_songs_track_num   CHECK (track_num > 0),
@@ -43,6 +51,8 @@ CREATE TABLE ArtistsInSongs (
     song_id      VARCHAR(22),
     artist_id    VARCHAR(22),
     artist_order SMALLINT DEFAULT 0,
+    created_at   DATE DEFAULT CURRENT_DATE,
+    last_synced  DATE DEFAULT CURRENT_DATE,
     CONSTRAINT pk_artistsinsongs_artist_id_song_id PRIMARY KEY (artist_id, song_id),
     CONSTRAINT fk_artistsinsongs_song_id           FOREIGN KEY(song_id) REFERENCES Songs(id) ON DELETE CASCADE,
     CONSTRAINT fk_artistsinsongs_artist_id         FOREIGN KEY(artist_id) REFERENCES Artists(id) ON DELETE CASCADE,
