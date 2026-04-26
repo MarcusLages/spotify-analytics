@@ -79,8 +79,6 @@ CREATE TABLE ArtistsInSongs (
     song_id      VARCHAR(22),
     artist_id    VARCHAR(22),
     artist_order SMALLINT DEFAULT 0,
-    created_at   DATE DEFAULT CURRENT_DATE,
-    updated_at   DATE DEFAULT CURRENT_DATE,
     CONSTRAINT pk_artistsinsongs_artist_id_song_id PRIMARY KEY (song_id, artist_id),
     CONSTRAINT fk_artistsinsongs_song_id           FOREIGN KEY(song_id) REFERENCES Songs(id) ON DELETE CASCADE,
     CONSTRAINT fk_artistsinsongs_artist_id         FOREIGN KEY(artist_id) REFERENCES Artists(id) ON DELETE CASCADE,
@@ -94,5 +92,3 @@ COMMENT ON TABLE ArtistsInSongs IS 'Relates which artists created/interpreted wh
 COMMENT ON COLUMN ArtistsInSongs.song_id IS 'Reference to the ID of a song interpreted/created by the artist.';
 COMMENT ON COLUMN ArtistsInSongs.artist_id IS 'Reference to the ID of an artist that interpreted/created the song.';
 COMMENT ON COLUMN ArtistsInSongs.artist_order IS 'Order of artist appearance on song (0 = main artist, 1+ = featured).';
-COMMENT ON COLUMN ArtistsInSongs.created_at IS 'Date record was created locally.';
-COMMENT ON COLUMN ArtistsInSongs.updated_at IS 'Last date relationship was synced from Spotify API.';
