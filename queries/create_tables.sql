@@ -33,12 +33,17 @@ CREATE TABLE Songs (
     CONSTRAINT ck_songs_popularity  CHECK (popularity >= 0 AND popularity <= 100)
 );
 
+CREATE INDEX idx_songs_album_id ON Songs(album_id); -- B-tree vs Hash
+
 CREATE TABLE ArtistsInSongs (
-    artist_id    VARCHAR(22),
     song_id      VARCHAR(22),
+    artist_id    VARCHAR(22),
     artist_order SMALLINT DEFAULT 0,
     CONSTRAINT pk_artistsinsongs_artist_id_song_id PRIMARY KEY (artist_id, song_id),
-    CONSTRAINT fk_artistsinsongs_artist_id         FOREIGN KEY(artist_id) REFERENCES Artists(id) ON DELETE CASCADE,
     CONSTRAINT fk_artistsinsongs_song_id           FOREIGN KEY(song_id) REFERENCES Songs(id) ON DELETE CASCADE,
+    CONSTRAINT fk_artistsinsongs_artist_id         FOREIGN KEY(artist_id) REFERENCES Artists(id) ON DELETE CASCADE,
     CONSTRAINT ck_artistsinsongs_artist_order      CHECK(artist_order >= 0)
 );
+
+-- No need to index song_id
+CREATE INDEX idx_artistsinsongs_artist_id ON ArtistsInSongs(artist_id);
