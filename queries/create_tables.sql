@@ -32,3 +32,20 @@ CREATE TABLE Songs (
     CONSTRAINT PositiveTrackNum CHECK (track_num > 0),
     CONSTRAINT PositiveDurationMs CHECK (duration_ms > 0)
 );
+
+-- Relation Tables
+CREATE TABLE ArtistsInAlbums (
+    artist_id VARCHAR(62),
+    album_id  VARCHAR(62),
+    CONSTRAINT ArtistAlbumPK PRIMARY KEY (artist_id, album_id),
+    CONSTRAINT ArtistFK FOREIGN KEY(artist_id) REFERENCES Artists(id),
+    CONSTRAINT AlbumFK FOREIGN KEY(album_id) REFERENCES Albums(id)
+);
+
+CREATE TABLE ArtistsInSongs (
+    artist_id VARCHAR(62),
+    song_id  VARCHAR(62),
+    CONSTRAINT ArtistSongPK PRIMARY KEY (artist_id, song_id),
+    CONSTRAINT ArtistFK FOREIGN KEY(artist_id) REFERENCES Artists(id),
+    CONSTRAINT SongFK FOREIGN KEY(song_id) REFERENCES Songs(id)
+);
