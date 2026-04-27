@@ -24,29 +24,29 @@ CREATE OR REPLACE TRIGGER trg_songs_updated_at_update
 
 --* Trigger to delete all songs of an artist, when the artist is deleted,
 --* whenever the artist is the only one in that song
-CREATE OR REPLACE FUNCTION fn_song_deleted_when_artist_deleted()
-    RETURNS TRIGGER AS $songs_deleted_when_artist_deleted$
-    BEGIN
-        DELETE FROM Songs
-        WHERE id IN (
-            SELECT ais.song_id
-            FROM ArtistsInSongs ais
-            WHERE ais.artist_id = OLD.id
-                AND NOT EXISTS (
-                    SELECT 1
-                    FROM ArtistsInSongs ais2
-                    WHERE ais2.artist_id <> OLD.id
-                        AND ais2.song_id = ais.song_id
-                )
-        );
-        RETURN OLD;
-    END;
-$songs_deleted_when_artist_deleted$ LANGUAGE PLPGSQL;
+-- CREATE OR REPLACE FUNCTION fn_song_deleted_when_artist_deleted()
+--     RETURNS TRIGGER AS $songs_deleted_when_artist_deleted$
+--     BEGIN
+--         DELETE FROM Songs
+--         WHERE id IN (
+--             SELECT ais.song_id
+--             FROM ArtistsInSongs ais
+--             WHERE ais.artist_id = OLD.id
+--                 AND NOT EXISTS (
+--                     SELECT 1
+--                     FROM ArtistsInSongs ais2
+--                     WHERE ais2.artist_id <> OLD.id
+--                         AND ais2.song_id = ais.song_id
+--                 )
+--         );
+--         RETURN OLD;
+--     END;
+-- $songs_deleted_when_artist_deleted$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE TRIGGER trg_artists_song_delete
-    BEFORE DELETE ON Artists
-    FOR EACH ROW
-    EXECUTE FUNCTION fn_song_deleted_when_artist_deleted();
+-- CREATE OR REPLACE TRIGGER trg_artists_song_delete
+--     BEFORE DELETE ON Artists
+--     FOR EACH ROW
+--     EXECUTE FUNCTION fn_song_deleted_when_artist_deleted();
 
 --* Trigger to delete an artist if the artist has no remaining songs
 -- CREATE OR REPLACE FUNCTION fn_artist_delete_if_no_songs()
@@ -102,19 +102,19 @@ CREATE OR REPLACE TRIGGER trg_artists_song_delete
 --     EXECUTE FUNCTION fn_artistsinsongs_delete_artist_if_no_songs();
 
 --* Trigger to delete all songs of an album when the album is deleted
-CREATE OR REPLACE FUNCTION fn_songs_deleted_when_album_deleted()
-    RETURNS TRIGGER AS $songs_deleted_when_album_deleted$
-    BEGIN
-        DELETE FROM Songs
-        WHERE album_id = OLD.id;
-        RETURN OLD;
-    END;
-$songs_deleted_when_album_deleted$ LANGUAGE PLPGSQL;
+-- CREATE OR REPLACE FUNCTION fn_songs_deleted_when_album_deleted()
+--     RETURNS TRIGGER AS $songs_deleted_when_album_deleted$
+--     BEGIN
+--         DELETE FROM Songs
+--         WHERE album_id = OLD.id;
+--         RETURN OLD;
+--     END;
+-- $songs_deleted_when_album_deleted$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE TRIGGER trg_albums_song_delete
-    BEFORE DELETE ON Albums
-    FOR EACH ROW
-    EXECUTE FUNCTION fn_songs_deleted_when_album_deleted();
+-- CREATE OR REPLACE TRIGGER trg_albums_song_delete
+--     BEFORE DELETE ON Albums
+--     FOR EACH ROW
+--     EXECUTE FUNCTION fn_songs_deleted_when_album_deleted();
 
 
 --* Trigger to delete an album if it has no remaining songs
