@@ -1,8 +1,8 @@
 CREATE TABLE Artists (
     id   VARCHAR(22), -- PK
     name VARCHAR(255) UNIQUE NOT NULL,
-    created_at      DATE DEFAULT CURRENT_DATE,
-    updated_at      DATE DEFAULT CURRENT_DATE,
+    created_at      TIMESTAMP DEFAULT NOW(),
+    updated_at      TIMESTAMP DEFAULT NOW(),
     CONSTRAINT pk_artists_id PRIMARY KEY(id)
 );
 
@@ -15,7 +15,6 @@ COMMENT ON COLUMN Artists.updated_at IS 'Last date artist data was fetched from 
 CREATE TYPE ALBUMTYPE as ENUM('album', 'single', 'compilation');
 CREATE TYPE DATEPRECISION as ENUM('year', 'month', 'day');
 
--- TODO: ADD COMMENTS
 
 CREATE TABLE Albums (
     id                     VARCHAR(22), -- PK
@@ -23,9 +22,9 @@ CREATE TABLE Albums (
     type                   ALBUMTYPE DEFAULT 'album',
     release_date           DATE,
     release_date_precision DATEPRECISION DEFAULT 'year',
-    added_at               DATE DEFAULT CURRENT_DATE,
-    created_at             DATE DEFAULT CURRENT_DATE,
-    updated_at             DATE DEFAULT CURRENT_DATE,
+    added_at               TIMESTAMP DEFAULT NOW(),
+    created_at             TIMESTAMP DEFAULT NOW(),
+    updated_at             TIMESTAMP DEFAULT NOW(),
     CONSTRAINT pk_albums_id PRIMARY KEY(id)
 );
 
@@ -50,9 +49,9 @@ CREATE TABLE Songs (
     duration_ms  INTEGER,
     is_playable  BOOLEAN DEFAULT NULL,
     popularity   SMALLINT,
-    added_at     DATE DEFAULT CURRENT_DATE,
-    created_at   DATE DEFAULT CURRENT_DATE,
-    updated_at   DATE DEFAULT CURRENT_DATE,
+    added_at     TIMESTAMP DEFAULT NOW(),
+    created_at   TIMESTAMP DEFAULT NOW(),
+    updated_at   TIMESTAMP DEFAULT NOW(),
     CONSTRAINT pk_songs_id          PRIMARY KEY(id),
     CONSTRAINT fk_songs_album_id    FOREIGN KEY(album_id) REFERENCES Albums(id),
     CONSTRAINT ck_songs_track_num   CHECK (track_num > 0),

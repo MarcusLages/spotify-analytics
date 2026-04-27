@@ -2,7 +2,7 @@
 CREATE OR REPLACE FUNCTION fn_set_updated_at()
     RETURNS TRIGGER AS $updated_at$
     BEGIN
-        NEW.updated_at = CURRENT_DATE;
+        NEW.updated_at = NOW();
         RETURN NEW;
     END;
 $updated_at$ LANGUAGE PLPGSQL;
