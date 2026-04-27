@@ -1,4 +1,3 @@
-import json
 import os
 import spotipy
 import psycopg2
@@ -6,7 +5,7 @@ from datetime import date, datetime, timezone
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
-FETCH_LIMIT = 5
+FETCH_LIMIT = 50
 
 load_dotenv()
 
@@ -113,31 +112,19 @@ def insert_artists_in_song(song_id, artists):
             """,
             (song_id, artist["id"], order),
         )
-        
-def fetch_saved_tracks(limit = FETCH_LIMIT):
-    results = sp.current_user_saved_tracks(limit)
-    return results["items"]
 
 def build_output(item):
     track = item["track"]
     album = track["album"]
-    release_date, precision = parse_release_date(album.get("release_date"))
 
     return {
         "song": {
             "id": track["id"],
-            "name": track["name"],
-            "track_number": track.get("track_number"),
-            "duration_ms": track.get("duration_ms"),
-            "is_playable": track.get("is_playable"),
-            "added_at": item["added_at"],
+            "name": track["name"]
         },
         "album": {
             "id": album["id"],
-            "name": album["name"],
-            "type": album["album_type"],
-            "release_date": release_date.isoformat() if release_date else None,
-            "release_date_precision": precision,
+            "name": album["name"]
         },
         "artists": [
             {"id": a["id"], "name": a["name"], "order": i}
@@ -160,33 +147,34 @@ def process_item(item):
 
     return build_output(item)
 
-def main() -> None:
-    items = fetch_saved_tracks()
-
-    print(f"Fetching {len(items)} saved tracks.")
-
-    output = []
-
+def main():
+    res = {"next": 1}
+    offset = 0
+    
     try:
-        for item in items:
-            record = process_item(item)
-            output.append(record)
+        while res["next"]:
+            res = sp.current_user_saved_tracks(offset=offset, limit=FETCH_LIMIT)
+            items = res["items"]
 
-        conn.commit()
-        print("All records committed to database.")
-    except Exception as e:
-        conn.rollback()
-        print(f"Error. Transaction rolled back: {e}")
-        raise
+            print("\n" + "-" * 20)
+            print(f"Fetching [{offset}-{len(items)}] saved tracks.")
+
+            try:
+                for (idx, item) in enumerate(items):
+                    out = process_item(item)
+                    print(f"{idx + offset} - \"{out['song']['name']}\" ({out['album']['name']}) by {out['artists'][0]['name']}")
+
+                conn.commit()
+                offset += FETCH_LIMIT
+                print(f"Records [{offset}-{offset + len(items)}] committed to database.")
+            except Exception as e:
+                conn.rollback()
+                print(f"Error. Transaction rolled back: {e}.")
+                print(f"Restart from offset: {offset}.")
+                raise
     finally:
         cur.close()
         conn.close()
-
-    output_path = "output.json"
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, indent=2, default=str)
-
-    print(f"Output also saved to {output_path}.")
 
 if __name__ == "__main__":
     main()
