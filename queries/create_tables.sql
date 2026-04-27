@@ -1,8 +1,8 @@
 CREATE TABLE Artists (
     id   VARCHAR(22), -- PK
     name VARCHAR(255) UNIQUE NOT NULL,
-    created_at        TIMESTAMPZ DEFAULT NOW(),
-    updated_at        TIMESTAMPZ DEFAULT NOW(),
+    created_at        TIMESTAMPTZ DEFAULT NOW(),
+    updated_at        TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT pk_artists_id PRIMARY KEY(id)
 );
 
@@ -22,9 +22,9 @@ CREATE TABLE Albums (
     type                   ALBUMTYPE DEFAULT 'album',
     release_date           DATE,
     release_date_precision DATEPRECISION DEFAULT 'year',
-    added_at               TIMESTAMPZ DEFAULT NOW(),
-    created_at             TIMESTAMPZ DEFAULT NOW(),
-    updated_at             TIMESTAMPZ DEFAULT NOW(),
+    added_at               TIMESTAMPTZ DEFAULT NOW(),
+    created_at             TIMESTAMPTZ DEFAULT NOW(),
+    updated_at             TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT pk_albums_id PRIMARY KEY(id)
 );
 
@@ -49,9 +49,9 @@ CREATE TABLE Songs (
     duration_ms  INTEGER,
     is_playable  BOOLEAN DEFAULT NULL,
     popularity   SMALLINT,
-    added_at     TIMESTAMPZ DEFAULT NOW(),
-    created_at   TIMESTAMPZ DEFAULT NOW(),
-    updated_at   TIMESTAMPZ DEFAULT NOW(),
+    added_at     TIMESTAMPTZ DEFAULT NOW(),
+    created_at   TIMESTAMPTZ DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT pk_songs_id          PRIMARY KEY(id),
     CONSTRAINT fk_songs_album_id    FOREIGN KEY(album_id) REFERENCES Albums(id),
     CONSTRAINT ck_songs_track_num   CHECK (track_num > 0),
