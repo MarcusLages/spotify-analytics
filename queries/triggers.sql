@@ -100,3 +100,40 @@ CREATE OR REPLACE TRIGGER trg_artistsinsongs_delete_artists_no_songs_update
     FOR EACH ROW
     WHEN (OLD.artist_id IS DISTINCT FROM NEW.artist_id)
     EXECUTE FUNCTION fn_artistsinsongs_delete_artist_if_no_songs();
+
+--* Trigger to delete all songs of an album when the album is deleted
+CREATE OR REPLACE FUNCTION fn_songs_deleted_when_album_deleted()
+    RETURNS TRIGGER AS $songs_deleted_when_album_deleted$
+    BEGIN
+        DELETE FROM Songs
+        WHERE album_id = OLD.id;
+        RETURN OLD;
+    END;
+$songs_deleted_when_album_deleted$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER trg_albums_song_delete
+    BEFORE DELETE ON Albums
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_songs_deleted_when_album_deleted();
+
+
+--* Trigger to delete an album if it has no remaining songs
+CREATE OR REPLACE FUNCTION fn_album_delete_if_no_songs()
+    RETURNS TRIGGER AS $album_delete_if_no_songs$
+    BEGIN
+        DELETE FROM Albums
+        WHERE id = OLD.album_id
+            AND NOT EXISTS (
+                SELECT 1
+                FROM Songs s
+                WHERE s.album_id = OLD.album_id
+                    AND s.id <> OLD.id
+            );
+        RETURN OLD;
+    END;
+$album_delete_if_no_songs$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER trg_songs_album_delete
+    BEFORE DELETE ON Songs
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_album_delete_if_no_songs();
