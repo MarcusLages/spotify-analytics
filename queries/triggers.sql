@@ -43,7 +43,7 @@ CREATE OR REPLACE FUNCTION fn_song_deleted_when_artist_deleted()
     END;
 $songs_deleted_when_artist_deleted$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE TRIGGER trg_songs_artist_delete
+CREATE OR REPLACE TRIGGER trg_artists_song_delete
     BEFORE DELETE ON Artists
     FOR EACH ROW
     EXECUTE FUNCTION fn_song_deleted_when_artist_deleted();
@@ -62,13 +62,13 @@ CREATE OR REPLACE FUNCTION fn_artist_delete_if_no_songs()
                     FROM ArtistsInSongs ais2
                     WHERE ais.artist_id = ais2.artist_id
                         AND ais2.song_id <> OLD.id
-                );
+                )
         );
         RETURN OLD;
     END;
 $artist_delete_if_no_songs$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE TRIGGER trg_artists_songs_delete
+CREATE OR REPLACE TRIGGER trg_songs_artists_delete
     BEFORE DELETE ON Songs
     FOR EACH ROW
     EXECUTE FUNCTION fn_artist_delete_if_no_songs();
@@ -76,7 +76,7 @@ CREATE OR REPLACE TRIGGER trg_artists_songs_delete
 --* Trigger to delete an artist if the artist has no remaining songs
 --* (now checking for DELETEs and UPDATEs in the ArtistsInSongs)
 CREATE OR REPLACE FUNCTION fn_artistsinsongs_delete_artist_if_no_songs()
-    RETURN TRIGGER AS $artistsinsongs_delete_artist_if_no_songs$
+    RETURNS TRIGGER AS $artistsinsongs_delete_artist_if_no_songs$
     BEGIN
         DELETE FROM Artists
         WHERE id = OLD.artist_id
@@ -98,4 +98,5 @@ CREATE OR REPLACE TRIGGER trg_artistsinsongs_delete_artists_no_songs_delete
 CREATE OR REPLACE TRIGGER trg_artistsinsongs_delete_artists_no_songs_update
     BEFORE UPDATE ON ArtistsInSongs
     FOR EACH ROW
+    WHEN (OLD.artist_id IS DISTINCT FROM NEW.artist_id)
     EXECUTE FUNCTION fn_artistsinsongs_delete_artist_if_no_songs();
