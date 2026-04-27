@@ -48,15 +48,13 @@ CREATE TABLE Songs (
     track_num    SMALLINT DEFAULT 1,
     duration_ms  INTEGER,
     is_playable  BOOLEAN DEFAULT NULL,
-    popularity   SMALLINT,
     added_at     TIMESTAMPTZ DEFAULT NOW(),
     created_at   TIMESTAMPTZ DEFAULT NOW(),
     updated_at   TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT pk_songs_id          PRIMARY KEY(id),
     CONSTRAINT fk_songs_album_id    FOREIGN KEY(album_id) REFERENCES Albums(id),
     CONSTRAINT ck_songs_track_num   CHECK (track_num > 0),
-    CONSTRAINT ck_songs_duration_ms CHECK (duration_ms > 0),
-    CONSTRAINT ck_songs_popularity  CHECK (popularity >= 0 AND popularity <= 100)
+    CONSTRAINT ck_songs_duration_ms CHECK (duration_ms > 0)
 );
 
 CREATE INDEX idx_songs_album_id ON Songs(album_id); -- B-tree vs Hash
@@ -69,7 +67,6 @@ COMMENT ON COLUMN Songs.album_id IS 'ID of album which the song is part of.';
 COMMENT ON COLUMN Songs.track_num IS 'Track number on the album (1-indexed).';
 COMMENT ON COLUMN Songs.duration_ms IS 'Song duration in milliseconds.';
 COMMENT ON COLUMN Songs.is_playable IS 'Whether the song is playable in the user region.';
-COMMENT ON COLUMN Songs.popularity IS 'Spotify popularity score (0-100).';
 COMMENT ON COLUMN Songs.added_at IS 'Date song was added to user library.';
 COMMENT ON COLUMN Songs.created_at IS 'Date record was created locally.';
 COMMENT ON COLUMN Songs.updated_at IS 'Last date song data was fetched from Spotify API.';

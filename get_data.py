@@ -88,8 +88,8 @@ def insert_song(track, album_id, added_at):
 
     cur.execute(
         """
-        INSERT INTO Songs (id, name, album_id, track_num, duration_ms, is_playable, popularity, added_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO Songs (id, name, album_id, track_num, duration_ms, is_playable, added_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO NOTHING
         """,
         (
@@ -99,7 +99,6 @@ def insert_song(track, album_id, added_at):
             track.get("track_number"),
             track.get("duration_ms"),
             track.get("is_playable"),
-            track.get("popularity"),
             added_date,
         ),
     )
@@ -131,7 +130,6 @@ def build_output(item):
             "track_number": track.get("track_number"),
             "duration_ms": track.get("duration_ms"),
             "is_playable": track.get("is_playable"),
-            "popularity": track.get("popularity"),
             "added_at": item["added_at"],
         },
         "album": {
