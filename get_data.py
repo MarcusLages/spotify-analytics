@@ -165,8 +165,8 @@ def main():
                     print(f"{idx + offset} - \"{out['song']['name']}\" ({out['album']['name']}) by {out['artists'][0]['name']}")
 
                 conn.commit()
-                offset += FETCH_LIMIT
                 print(f"Records [{offset}-{offset + len(items)}] committed to database.")
+                offset += FETCH_LIMIT
             except Exception as e:
                 conn.rollback()
                 print(f"Error. Transaction rolled back: {e}.")

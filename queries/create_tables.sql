@@ -1,6 +1,6 @@
 CREATE TABLE Artists (
     id   VARCHAR(22), -- PK
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     created_at        TIMESTAMPTZ DEFAULT NOW(),
     updated_at        TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT pk_artists_id PRIMARY KEY(id)
@@ -54,7 +54,7 @@ CREATE TABLE Songs (
     CONSTRAINT pk_songs_id          PRIMARY KEY(id),
     CONSTRAINT fk_songs_album_id    FOREIGN KEY(album_id) REFERENCES Albums(id),
     CONSTRAINT ck_songs_track_num   CHECK (track_num > 0),
-    CONSTRAINT ck_songs_duration_ms CHECK (duration_ms > 0)
+    CONSTRAINT ck_songs_duration_ms CHECK (duration_ms >= 0)
 );
 
 CREATE INDEX idx_songs_album_id ON Songs(album_id); -- B-tree vs Hash
